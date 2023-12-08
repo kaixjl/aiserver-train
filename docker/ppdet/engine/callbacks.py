@@ -121,9 +121,9 @@ class LogPrinter(Callback):
                     eta_str = str(datetime.timedelta(seconds=int(eta_sec)))
                     ips = float(batch_size) / batch_time.avg
                     fmt = ' '.join([
-                        'Epoch: [{}]',
+                        'Ep: [{}]',
                         '[{' + space_fmt + '}/{}]',
-                        'learning_rate: {lr:.6f}',
+                        'lr: {lr:.6f}',
                         '{meters}',
                         'eta: {eta}',
                         'batch_cost: {btime}',
@@ -140,12 +140,11 @@ class LogPrinter(Callback):
                         btime=str(batch_time),
                         dtime=str(data_time),
                         ips=ips)
-                    logger.info(fmt)
-                    # print('Epoch: ', epoch, '| train loss: %.4f' % loss.item(), '| test accuracy: %.2f' % accuracy)
-                    print("Epoch: {} | train loss: {:.4f} | test accuracy: {:.4f}".format(status['epoch_id'] if "epoch_id" in status.keys() else 0, status['training_staus'].meters["loss"].median if ("training_staus" in status.keys() and status["training_staus"].meters is not None and "loss" in status["training_staus"].meters) else 0, status["metric_acc"] if "metric_acc" in status.keys() else 0), flush=True)
+                    # logger.info(fmt)
+                    # print("Epoch: {} | train loss: {:.4f} | test accuracy: {:.4f}".format(status['epoch_id'] if "epoch_id" in status.keys() else 0, status['training_staus'].meters["loss"].median if ("training_staus" in status.keys() and status["training_staus"].meters is not None and "loss" in status["training_staus"].meters) else 0, status["metric_acc"] if "metric_acc" in status.keys() else 0), flush=True)
             if mode == 'eval':
                 step_id = status['step_id']
-                if step_id % 100 == 0:
+                if step_id % 500 == 0:
                     logger.info("Eval iter: {}".format(step_id))
 
     def on_epoch_end(self, status):
@@ -156,7 +155,10 @@ class LogPrinter(Callback):
                 cost_time = status['cost_time']
                 logger.info('Total sample number: {}, average FPS: {}'.format(
                     sample_num, sample_num / cost_time))
-                print("Epoch: {} | train loss: {:.4f} | test accuracy: {:.4f}".format(status['epoch_id'] if "epoch_id" in status.keys() else 0, status['training_staus'].meters["loss"].median if ("training_staus" in status.keys() and status["training_staus"].meters is not None and "loss" in status["training_staus"].meters) else 0, status["metric_acc"] if "metric_acc" in status.keys() else 0), flush=True)
+                if status["outer_mode"] == "train":
+                    print("Epoch: {} | train loss: {:.4f} | test accuracy: {:.2f}".format(status['epoch_id'] if "epoch_id" in status.keys() else 0, status['training_staus'].meters["loss"].median if ("training_staus" in status.keys() and status["training_staus"].meters is not None and "loss" in status["training_staus"].meters) else 0, status["metric_acc"] if "metric_acc" in status.keys() else 0), flush=True)
+                elif status["outer_mode"] == "eval":
+                    print("tested: {}, correct: {}, accuracy: {:.2f}".format(sample_num, sample_num, status["metric_acc"] if "metric_acc" in status.keys() else 0))
 
 
 
@@ -173,6 +175,8 @@ class Checkpointer(Callback):
 
     def on_epoch_end(self, status):
         # Checkpointer only performed during training
+        if not status["is_snapshot"]: return
+
         mode = status['mode']
         epoch_id = status['epoch_id']
         weight = None

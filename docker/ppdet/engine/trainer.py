@@ -417,10 +417,11 @@ class Trainer(object):
         else:
             self.start_epoch = load_weight(self.model, weights, self.optimizer,
                                            self.ema if self.use_ema else None)
-        logger.debug("Resume weights of epoch {}".format(self.start_epoch))
+        logger.debug("Resume weights of ep {}".format(self.start_epoch))
 
     def train(self, validate=False):
         assert self.mode == 'train', "Model not in 'train' mode"
+        self.status["outer_mode"] = "train"
         Init_mark = False
         if validate:
             self.cfg['EvalDataset'] = self.cfg.EvalDataset = create(
@@ -560,6 +561,7 @@ class Trainer(object):
 
             is_snapshot = (self._nranks < 2 or (self._local_rank == 0 or self.cfg.metric == "Pose3DEval")) \
                        and ((epoch_id + 1) % self.cfg.snapshot_epoch == 0 or epoch_id == self.end_epoch - 1)
+            self.status["is_snapshot"] = is_snapshot
             if is_snapshot and self.use_ema:
                 # apply ema weight on model
                 weight = copy.deepcopy(self.model.state_dict())
@@ -568,7 +570,8 @@ class Trainer(object):
 
             self._compose_callback.on_epoch_end(self.status)
 
-            if validate and is_snapshot:
+            # if validate and is_snapshot:
+            if validate:
                 if not hasattr(self, '_eval_loader'):
                     # build evaluation dataset and loader
                     self._eval_dataset = self.cfg.EvalDataset
@@ -656,6 +659,7 @@ class Trainer(object):
 
     def evaluate(self):
         # get distributed model
+        self.status["outer_mode"] = "eval"
         if self.cfg.get('fleet', False):
             self.model = fleet.distributed_model(self.model)
             self.optimizer = fleet.distributed_optimizer(self.optimizer)

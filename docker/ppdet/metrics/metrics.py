@@ -141,7 +141,7 @@ class COCOMetric(Metric):
                     output,
                     'bbox',
                     anno_file=self.anno_file,
-                    classwise=self.classwise)
+                    classwise=self.classwise) # list of {AP,AP,AP,AP,AP,AP,AR,AR,AR,AR,AR,AR}, ref to COCOeval
                 self.eval_results['bbox'] = bbox_stats
                 ret["acc"] = bbox_stats[0] if len(bbox_stats) > 0 else 0
                 sys.stdout.flush()

@@ -21,6 +21,21 @@ ENV HP_EPOCHES numeric:[1,)
 ENV HP_BATCH_SIZE numeric:[1,)
 ENV HP_LEARNING_RATE numeric:(,)
 
+# coco
+ENV CFG=ppyoloe_plus_crn_m_80e_coco
+ENV CFG_FILE=configs/ppyoloe/${CFG}.yml
+ENV OUT_WEIGHT_DIR=/weight/${CFG}
+ENV OUT_PD_DIR=output/${CFG}
+ENV PRETRAIN_WEIGHTS=/pretrain_weights/ppyoloe_crn_m_obj365_pretrained.pdparams
+
+# voc
+# ENV CFG=ppyoloe_plus_crn_s_30e_voc
+# ENV CFG_FILE=configs/ppyoloe/voc/${CFG}.yml
+# ENV OUT_WEIGHT_DIR=/weight/${CFG}
+# ENV OUT_PD_DIR=output/${CFG}
+# ENV PRETRAIN_WEIGHTS=/pretrain_weights/ppyoloe_plus_crn_s_80e_coco.pdparams
+
+COPY docker.local.d/pretrain_weights/ppyoloe_crn_m_obj365_pretrained.pdparams /pretrain_weights/ppyoloe_crn_m_obj365_pretrained.pdparams
 # COPY docker/configs/ppyoloe/ppyoloe_plus_crn_m_80e_coco.yml /home/PaddleDetection/configs/ppyoloe/
 COPY docker/configs/datasets/coco_detection.yml /home/PaddleDetection/configs/datasets/
 COPY docker/configs/datasets/voc.yml /home/PaddleDetection/configs/datasets/

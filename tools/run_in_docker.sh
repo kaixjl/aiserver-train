@@ -4,7 +4,7 @@
 IMAGE_TAG=aiserver-train
 docker run --gpus all -it --rm \
     -e MODEL_WORKING_MODE=2 \
-    -e HP_EPOCHES=80 \
+    -e HP_EPOCHES=5 \
     -e HP_BATCH_SIZE=2 \
     -e HP_LEARNING_RATE=0.0001 \
     -v /home/xiuhx/projects/aiserver-train/output/weight:/weight \
@@ -13,4 +13,3 @@ docker run --gpus all -it --rm \
     ${IMAGE_TAG}
 
 #   -e ENABLE_ALGORITHMS='"fakealarm"' \
-# print('Epoch: ', epoch, '| train loss: %.4f' % loss.item(), '| test accuracy: %.2f' % accuracy)
