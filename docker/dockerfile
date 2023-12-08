@@ -1,0 +1,37 @@
+# FROM ppyoloe1:8.0
+FROM paddlecloud/paddledetection:2.4-gpu-cuda11.2-cudnn8-latest
+
+RUN pip install paddle2onnx
+RUN pip install paddlex
+
+RUN git fetch
+RUN git checkout release/2.6
+
+RUN pip install imgaug
+
+ENV MODEL_DATA_TYPE=video
+
+ENV MODEL_TRAINING=true
+ENV MODEL_INSPECT=true
+ENV MODEL_INFERENCE=false
+
+ENV USE_GPU=true
+
+ENV HP_EPOCHES numeric:[1,)
+ENV HP_BATCH_SIZE numeric:[1,)
+ENV HP_LEARNING_RATE numeric:(,)
+
+# COPY docker/configs/ppyoloe/ppyoloe_plus_crn_m_80e_coco.yml /home/PaddleDetection/configs/ppyoloe/
+COPY docker/configs/datasets/coco_detection.yml /home/PaddleDetection/configs/datasets/
+COPY docker/configs/datasets/voc.yml /home/PaddleDetection/configs/datasets/
+COPY docker/ppdet/engine/callbacks.py /home/PaddleDetection/ppdet/engine/callbacks.py
+COPY docker/ppdet/engine/trainer.py /home/PaddleDetection/ppdet/engine/trainer.py
+COPY docker/ppdet/metrics/metrics.py /home/PaddleDetection/ppdet/metrics/metrics.py
+COPY docker/post_process_infer_cfg.py /home/PaddleDetection/
+
+COPY docker/start.sh /home/PaddleDetection/
+
+CMD [ "/bin/bash", "start.sh" ]
+# CMD [ "python", "start_loop.py" ]
+
+# CMD [ "/bin/bash" ]

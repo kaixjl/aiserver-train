@@ -1,0 +1,5 @@
+/datasets/
+datasethelmet460/
+*.local.d
+*.bak.d
+output/
