@@ -35,7 +35,7 @@ l_eval() {
     python tools/eval.py \
         -c ${CFG_FILE} \
         -o epoch=${HP_EPOCHES} \
-           TrainReader.batch_size=${HP_BATCH_SIZE} \
+           EvalReader.batch_size=${HP_BATCH_SIZE} \
            LearningRate.base_lr=${HP_LEARNING_RATE} \
            weights=/weight/model_final.pdparams
 
