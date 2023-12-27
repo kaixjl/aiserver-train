@@ -153,8 +153,9 @@ class LogPrinter(Callback):
             if mode == 'eval':
                 sample_num = status['sample_num']
                 cost_time = status['cost_time']
-                logger.info('Total sample number: {}, average FPS: {}'.format(
-                    sample_num, sample_num / cost_time))
+                # logger.info('Total sample number: {}, average FPS: {}'.format(
+                #     sample_num, sample_num / cost_time))
+                print("Total sample number: {}".format(sample_num))
                 if status["outer_mode"] == "train":
                     print("Epoch: {} | train loss: {:.4f} | test accuracy: {:.2f}".format(status['epoch_id'] if "epoch_id" in status.keys() else 0, status['training_staus'].meters["loss"].median if ("training_staus" in status.keys() and status["training_staus"].meters is not None and "loss" in status["training_staus"].meters) else 0, status["metric_acc"] if "metric_acc" in status.keys() else 0), flush=True)
                 elif status["outer_mode"] == "eval":
